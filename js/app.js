@@ -1,307 +1,167 @@
-var operaciona = 0;
-    var operacionb = 0;
-    var operacion = "";
-    var resultado = 0;
-    var isSign = false;
+var calculadora = {
+
+	visor: document.getElementById("display"),
+	valorDisplay: "0",
+	operacion: "",
+	Valor1: 0,
+	Valor2: 0,
+	ValorUlt: 0,
+	Result: 0,
+	TeclaIgual: false,
+
+	inicia: (function(){
+		this.asignarFuncion();
+		this.asignarBotones(".tecla");
+
+	}),
 
 
+ 	asignarFuncion: function(){
+		document.getElementById("0").addEventListener("click", function() {calculadora.TecleaNumero("0");});
+		document.getElementById("1").addEventListener("click", function() {calculadora.TecleaNumero("1");});
+		document.getElementById("2").addEventListener("click", function() {calculadora.TecleaNumero("2");});
+		document.getElementById("3").addEventListener("click", function() {calculadora.TecleaNumero("3");});
+		document.getElementById("4").addEventListener("click", function() {calculadora.TecleaNumero("4");});
+		document.getElementById("5").addEventListener("click", function() {calculadora.TecleaNumero("5");});
+		document.getElementById("6").addEventListener("click", function() {calculadora.TecleaNumero("6");});
+		document.getElementById("7").addEventListener("click", function() {calculadora.TecleaNumero("7");});
+		document.getElementById("8").addEventListener("click", function() {calculadora.TecleaNumero("8");});
+		document.getElementById("9").addEventListener("click", function() {calculadora.TecleaNumero("9");});
+		document.getElementById("menos").addEventListener("click", function() {calculadora.TecleaOperacion("-");});
+		document.getElementById("mas").addEventListener("click", function() {calculadora.TecleaOperacion("+");});
+		document.getElementById("on").addEventListener("click", function() {calculadora.borrarDisplay();});
+		document.getElementById("sign").addEventListener("click", function() {calculadora.AlterSigno();});
+		document.getElementById("raiz").addEventListener("click", function() {calculadora.TecleaOperacion("raiz");});
+		document.getElementById("dividido").addEventListener("click", function() {calculadora.TecleaOperacion("/");});
+		document.getElementById("punto").addEventListener("click", function() {calculadora.TecleaDecimal();});
+		document.getElementById("igual").addEventListener("click", function() {calculadora.ImprimirResult();});
+		document.getElementById("por").addEventListener("click", function() {calculadora.TecleaOperacion("*");});
+
+	},
+
+		borrarDisplay: function(){
+ 	  this.valorDisplay = "0";
+		this.operacion = "";
+		this.Valor1 = 0;
+		this.Valor2 = 0;
+		this.Result = 0;
+		this.Operación = "";
+		this.TeclaIgual = false;
+		this.ValorUlt = 0;
+		this.ActDisplay();
+	},
+
+	AlterSigno: function(){
+		if (this.valorDisplay !="0") {
+			var aux;
+			if (this.valorDisplay.charAt(0)=="-") {
+				aux = this.valorDisplay.slice(1);
+			}	else {
+				aux = "-" + this.valorDisplay;
+			}
+		this.valorDisplay = "";
+		this.valorDisplay = aux;
+		this.ActDisplay();
+		}
+	},
+
+	TecleaDecimal: function(){
+		if (this.valorDisplay.indexOf(".")== -1) {
+			if (this.valorDisplay == ""){
+				this.valorDisplay = this.valorDisplay + "0.";
+			} else {
+				this.valorDisplay = this.valorDisplay + ".";
+			}
+			this.ActDisplay();
+		}
+	},
+
+	TecleaNumero: function(valor){
+		if (this.valorDisplay.length < 8) {
+
+			if (this.valorDisplay=="0") {
+				this.valorDisplay = "";
+				this.valorDisplay = this.valorDisplay + valor;
+			} else {
+				this.valorDisplay = this.valorDisplay + valor;
+			}
+		this.ActDisplay();
+		}
+	},
+
+	TecleaOperacion: function(oper){
+		this.Valor1 = parseFloat(this.valorDisplay);
+		this.valorDisplay = "";
+		this.operacion = oper;
+		this.TeclaIgual = false;
+		this.ActDisplay();
+	},
+
+	ImprimirResult: function(){
+ 		if(!this.TeclaIgual){
+			this.Valor2 = parseFloat(this.valorDisplay);
+			this.ValorUlt = this.Valor2;
+			this.realizarOperacion(this.Valor1, this.Valor2, this.operacion);
+		} else {
+		this.realizarOperacion(this.Valor1, this.ValorUlt, this.operacion);
+		}
+		this.Valor1 = this.Result;
+   	this.valorDisplay = "";
+ 		if (this.Result.toString().length < 9){
+			this.valorDisplay = this.Result.toString();
+		} else {
+			this.valorDisplay = this.Result.toString().slice(0,8) + "...";
+		}
+ 		this.TeclaIgual = true;
+		this.ActDisplay();
+	},
+
+	realizarOperacion: function(Valor1, Valor2, operacion){
+		switch(operacion){
+			case "+":
+				this.Result = eval(Valor1 + Valor2);
+			break;
+			case "-":
+				this.Result = eval(Valor1 - Valor2);
+			break;
+			case "*":
+				this.Result = eval(Valor1 * Valor2);
+			break;
+			case "/":
+				this.Result = eval(Valor1 / Valor2);
+			break;
+			case "raiz":
+				this.Result = eval(Math.sqrt(Valor1));
+		}
+	},
 
 
-     var display = document.getElementById('display')
-     display.innerHTML = '0';
+		asignarBotones: function(selector){
+			var x = document.querySelectorAll(selector);
+			for (var i = 0; i<x.length;i++) {
+				x[i].onmouseover = this.eventoMenosBoton;
+				x[i].onmouseleave = this.eventoMasBoton;
+			};
+		},
+	 	eventoMenosBoton: function(event){
+			calculadora.MenosBoton(event.target);
+		},
+	 	eventoMasBoton: function(event){
+			calculadora.MasBoton(event.target);
+		},
 
 
+		MenosBoton: function(elemento){
+			elemento.setAttribute("style","transform:scale(1.1,1.1)")
+		},
 
-   var resultado = document.getElementById('sign');
-   var reset = document.getElementById('on');
-   var suma = document.getElementById('mas');
-   var resta = document.getElementById('menos');
-   var multiplicacion = document.getElementById('por');
-   var division = document.getElementById('dividido');
-   var igual = document.getElementById('igual');
-   var punto = document.getElementById('punto');
-   var uno = document.getElementById('1');
-   var dos = document.getElementById('2');
-   var tres = document.getElementById('3');
-   var cuatro = document.getElementById('4');
-   var cinco = document.getElementById('5');
-   var seis = document.getElementById('6');
-   var siete = document.getElementById('7');
-   var ocho = document.getElementById('8');
-   var nueve = document.getElementById('9');
-   var cero = document.getElementById('0');
+		MasBoton: function(elemento){
+			elemento.setAttribute("style","transform:scale(1,1)")
+		},
 
+	ActDisplay: function(){
+		this.visor.innerHTML = this.valorDisplay;
+	}
 
-
-   uno.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "1"
-     }
-
-   }
-
-
-   dos.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "2"
-     }
-   }
-   tres.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "3"
-     }
-   }
-   cuatro.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "4"
-     }
-   }
-   cinco.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "5"
-     }
-   }
-   seis.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "6"
-     }
-   }
-   siete.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "7"
-     }
-   }
-   ocho.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "8"
-     }
-   }
-   nueve.onclick = function(){
-     if(display.innerHTML == "0"){
-       display.innerHTML = "";
-     }
-     if(display.innerHTML.length >= 8){
-     }else{
-     display.innerHTML += "9"
-     }
-   }
-   cero.onclick = function(){
-     display.innerHTML += "0"
-   }
-
-   suma.onclick = function(){
-     operaciona = display.innerHTML;
-     operacion = "+";
-     display.innerHTML = "";
-   }
-
-   resta.onclick = function(){
-     operaciona = display.innerHTML;
-     operacion = "-";
-     display.innerHTML = "";
-   }
-
-   multiplicacion.onclick = function(){
-     operaciona = display.innerHTML;
-     operacion = "*";
-     display.innerHTML = "";
-   }
-
-   division.onclick = function(){
-     operaciona = display.innerHTML;
-     operacion = "/";
-     display.innerHTML = "";
-
-   }
-   igual.onclick = function(){
-       operacionb = display.innerHTML;
-       if(operacion == "+"){
-       resultado = parseFloat(operaciona) + parseFloat(operacionb);
-       }
-       if(operacion == "-"){
-       resultado = parseFloat(operaciona) - parseFloat(operacionb);
-       }
-       if(operacion == "*"){
-
-       resultado = parseFloat(operaciona) * parseFloat(operacionb);
-       }
-       if(operacion == "/"){
-       resultado = parseFloat(operaciona) / parseFloat(operacionb);
-       }
-       if(display.innerHTML.length >= 8){
-         resultado
-       }else{
-        resultado=  resultado.toExponential(2);
-       display.innerHTML = resultado
-       }
-
-
-
-   }
-   on.onclick = function(){
-     display.innerHTML = "0"
-   }
-   sign.onclick = function(){
-     isSign = !isSign;
-     if(isSign && display.innerHTML!="0"){
-       display.innerHTML = "-" + display.innerHTML;
-     }else{
-       display.innerHTML =
-       display.innerHTML.slice(1);
-     }
-   }
-   sign.onclick = function(){
-     display.innerHTML = display.innerHTML + ".";
-     if(display.innerHTML!="0"){
-       display.innerHTML =  display.innerHTML + "." ;
-     }else{
-       display.innerHTML =
-       display.innerHTML.slice(1);
-     }
-   }
-   uno.addEventListener("mousedown",function(){
-         uno.setAttribute("style","transform:scale(1,1)")
-     })
-     uno.addEventListener("mouseout",function(){
-         uno.setAttribute("style","transform:scale(1.1,1.1)")
-     })
-     dos.addEventListener("mousedown",function(){
-           dos.setAttribute("style","transform:scale(1,1)")
-       })
-       dos.addEventListener("mouseout",function(){
-           dos.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       tres.addEventListener("mousedown",function(){
-           tres.setAttribute("style","transform:scale(1,1)")
-       })
-       tres.addEventListener("mouseout",function(){
-           tres.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       cuatro.addEventListener("mousedown",function(){
-           cuatro.setAttribute("style","transform:scale(1,1)")
-       })
-       cuatro.addEventListener("mouseout",function(){
-           cuatro.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       cinco.addEventListener("mousedown",function(){
-           cinco.setAttribute("style","transform:scale(1,1)")
-       })
-       cinco.addEventListener("mouseout",function(){
-           cinco.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       seis.addEventListener("mousedown",function(){
-           seis.setAttribute("style","transform:scale(1,1)")
-       })
-       seis.addEventListener("mouseout",function(){
-           seis.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       siete.addEventListener("mousedown",function(){
-           siete.setAttribute("style","transform:scale(1,1)")
-       })
-       siete.addEventListener("mouseout",function(){
-           siete.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       ocho.addEventListener("mousedown",function(){
-           ocho.setAttribute("style","transform:scale(1,1)")
-       })
-       ocho.addEventListener("mouseout",function(){
-           ocho.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       nueve.addEventListener("mousedown",function(){
-           nueve.setAttribute("style","transform:scale(1,1)")
-       })
-       nueve.addEventListener("mouseout",function(){
-           nueve.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       cero.addEventListener("mousedown",function(){
-           cero.setAttribute("style","transform:scale(1,1)")
-       })
-       cero.addEventListener("mouseout",function(){
-           cero.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       sign.addEventListener("mousedown",function(){
-           sign.setAttribute("style","transform:scale(1,1)")
-       })
-       sign.addEventListener("mouseout",function(){
-           sign.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       raiz.addEventListener("mousedown",function(){
-           raiz.setAttribute("style","transform:scale(1,1)")
-       })
-       raiz.addEventListener("mouseout",function(){
-           raiz.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       dividido.addEventListener("mousedown",function(){
-           dividido.setAttribute("style","transform:scale(1,1)")
-       })
-       dividido.addEventListener("mouseout",function(){
-           dividido.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       por.addEventListener("mousedown",function(){
-           por.setAttribute("style","transform:scale(1,1)")
-       })
-       por.addEventListener("mouseout",function(){
-           por.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       punto.addEventListener("mousedown",function(){
-           punto.setAttribute("style","transform:scale(1,1)")
-       })
-       punto.addEventListener("mouseout",function(){
-           punto.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       menos.addEventListener("mousedown",function(){
-           menos.setAttribute("style","transform:scale(1,1)")
-       })
-       menos.addEventListener("mouseout",function(){
-           menos.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       igual.addEventListener("mousedown",function(){
-           igual.setAttribute("style","transform:scale(1,1)")
-       })
-       igual.addEventListener("mouseout",function(){
-           igual.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       mas.addEventListener("mousedown",function(){
-           mas.setAttribute("style","transform:scale(1,1)")
-       })
-       mas.addEventListener("mouseout",function(){
-           mas.setAttribute("style","transform:scale(1.1,1.1)")
-       })
-       on.addEventListener("mousedown",function(){
-           on.setAttribute("style","transform:scale(1,1)")
-       })
-       on.addEventListener("mouseout",function(){
-           on.setAttribute("style","transform:scale(1.1,1.1)")
-       })
+};
+ calculadora.inicia();
